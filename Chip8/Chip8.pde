@@ -62,7 +62,7 @@ class Cpu{
           break;
           
           case 0x7000:
-              V[x] = char((V[x] + kk) & 0xFF);
+              V[x] = char((V[x] += kk) & 0xFF);
               //println("Add kk to V[x] : ", hex(V[x]));
           break;
             
