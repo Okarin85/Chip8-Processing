@@ -14,12 +14,19 @@ class Screen{
 class Cpu{
   char memory [] = new char [4096];
   char V [] = new char [16];
-  char I = 0x0;
-  char pc = 0x200;
-  char stack [] = new char [16];
-  int stackPointer = 0;
+  int I = 0x0;
+  int pc = 0x200;
+  short stack [] = new short [16];
+  short stackPointer = 0;
   int delayTimer = 0;
   int soundTimer = 0;
+  int opcode;
+  
+  int x;
+  int y;
+  int nn;
+  int nnn;
+  int n;
    
   
   //byte keys [] = new byte [16];
@@ -35,14 +42,15 @@ class Cpu{
   
   void run(){
     for(int i = 0; i < memory.length - pc; i++){
-        char opcode = (char)((memory[pc] << 8) | memory[pc + 1]);
+        opcode = memory[pc] << 8 | memory[pc + 1];
+        println("opcode : ", hex(opcode), "nn : ", hex(nn), "v[x] : ", hex(V[x]));
         //println(hex(opcode));
         
-        int x    = (opcode & 0x0F00) >> 8;
-        int y    = (opcode & 0x00F0) >> 4;
-        int kk   =  opcode & 0x00FF;
-        char nnn =  char(opcode & 0x0FFF);
-        int n    =  opcode & 0x000F;
+        x    = (opcode & 0x0F00) >> 8;
+        y    = (opcode & 0x00F0) >> 4;
+        nn   =  opcode & 0x00FF;
+        nnn =  opcode & 0x0FFF;
+        n    =  opcode & 0x000F;
         
         switch(opcode & 0xF000) {
           case 0x1000:
@@ -50,20 +58,24 @@ class Cpu{
           break;
           
           case 0x3000:
-            if(V[x] == kk){
+          //println("opcode : 0x3000");
+            if(V[x] == nn){
               pc+= 2;
-              println(kk);
-              println("Skipped next instruction, pc : ", hex(pc));
+              //println("nn : ", hex(nn));
+              //println("v[x] : ", hex(V[x]));
+              //println("Skipped next instruction, pc : ", hex(pc));
             }
             else{
-              println(kk);
-              println("Didn't skipped next instruction, pc : ", hex(pc));
+              //println(nn);
+              //println("Didn't skipped next instruction, pc : ", hex(pc));
             }
           break;
           
           case 0x7000:
-              V[x] = char((V[x] += kk) & 0xFF);
-              //println("Add kk to V[x] : ", hex(V[x]));
+          //println("opcode : 0x7000");
+              V[x] = char((V[x] += nn) & 0xFF);
+              //println("Add nn to V[x] : ", hex(V[x]));
+              //println("nn : ", hex(nn), "v[x] : ", hex(V[x]));
           break;
             
           case 0xA000:
@@ -72,10 +84,10 @@ class Cpu{
           break;
           
           case 0xC000:
-              int randomNumber = int(random(255)) & kk;
+              int randomNumber = int(random(255)) & nn;
               V[x] = char(randomNumber);
-              println(randomNumber);
-              //println(hex(kk));
+              //println(randomNumber);
+              //println(hex(nn));
           break;
           
           case 0xD000:
