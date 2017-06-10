@@ -5,6 +5,7 @@ class Screen{
     for( int i = 0; i < 64; i++){
       for(int j = 0; j < 32; j++){
         sprites[i][j] = 0;
+        fill(0);
         rect(i*10, j*10, 10, 10);
       }
     }
@@ -67,8 +68,9 @@ class Cpu{
             }
             else{
               //println(nn);
-              //println("Didn't skipped next instruction, pc : ", hex(pc));
+              println("Didn't skipped next instruction, pc : ", hex(pc));
             }
+            pc+= 2;
           break;
           
           case 0x7000:
@@ -76,11 +78,13 @@ class Cpu{
               V[x] = char((V[x] += nn) & 0xFF);
               //println("Add nn to V[x] : ", hex(V[x]));
               //println("nn : ", hex(nn), "v[x] : ", hex(V[x]));
+              pc+= 2;
           break;
             
           case 0xA000:
               I = nnn;
               //println("I : ", hex(I));
+              pc+= 2;
           break;
           
           case 0xC000:
@@ -88,6 +92,7 @@ class Cpu{
               V[x] = char(randomNumber);
               //println(randomNumber);
               //println(hex(nn));
+              pc+= 2;
           break;
           
           case 0xD000:
@@ -96,18 +101,19 @@ class Cpu{
                 for(int j = 0; j < 8; j++){
                   int pixel = line & (0x80 >> j);
                   if(pixel != 0){
-                    fill(0);
+                    fill(255);
                     rect((V[x] + j) * 10, (V[y] + _i) * 10, 10, 10);
                   }
                 }
               }
+              pc+= 2;
           break;
                                                           
           default:
               //println("Can't execute : ", hex(opcode));
+              pc+= 2;
           break;
          }
-      pc+= 2;
       }
   }
 }
